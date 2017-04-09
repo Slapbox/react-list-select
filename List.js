@@ -203,9 +203,9 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 				this.focusItem({ previous: true });
 			} else if (key == _keys.KEY.DOWN || key == _keys.KEY.J) {
 				this.focusItem({ next: true });
-			} else if (key == _keys.KEY.SPACE || key == _keys.KEY.ENTER) {
-				this.toggleSelect({ event, index: this.state.focusedIndex });
 			}
+
+			this.toggleSelect({ event, index: this.state.focusedIndex });
 
 			// prevent default behavior, in some situations pressing the key
 			// up / down would scroll the browser window
