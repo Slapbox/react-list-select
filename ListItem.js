@@ -1,20 +1,7 @@
-'use strict';
+import React from 'react';
+import cx from 'classnames';
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _classnames = require('classnames');
-
-var _classnames2 = _interopRequireDefault(_classnames);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-let ListItem = _react2.default.createClass({
+let ListItem = React.createClass({
 	displayName: 'ListItem',
 
 	getDefaultProps() {
@@ -25,13 +12,13 @@ let ListItem = _react2.default.createClass({
 		};
 	},
 	render() {
-		let classes = (0, _classnames2.default)('react-list-select--item', {
+		let classes = cx('react-list-select--item', {
 			'is-disabled': this.props.disabled,
 			'is-selected': this.props.selected,
 			'is-focused': this.props.focused
 		});
 
-		return _react2.default.createElement(
+		return React.createElement(
 			'li',
 			{ className: classes,
 				onMouseOver: () => this.props.onMouseOver(this.props.index),
@@ -41,19 +28,4 @@ let ListItem = _react2.default.createClass({
 	}
 });
 
-const _default = ListItem;
-exports.default = _default;
-;
-
-var _temp = function () {
-	if (typeof __REACT_HOT_LOADER__ === 'undefined') {
-		return;
-	}
-
-	__REACT_HOT_LOADER__.register(ListItem, 'ListItem', './ListItem.es6');
-
-	__REACT_HOT_LOADER__.register(_default, 'default', './ListItem.es6');
-}();
-
-;
-module.exports = exports['default'];
+export default ListItem;

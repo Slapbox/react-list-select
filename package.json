@@ -1,6 +1,6 @@
 {
   "name": "react-list-select",
-  "version": "0.4.0",
+  "version": "0.3.0",
   "description": "List with selectable and navigable items",
   "keywords": [
     "react-component"
@@ -44,7 +44,7 @@
   },
   "scripts": {
     "clean": "rm -f *.js example/*.js",
-    "make-example": "browserify $npm_package_config_browserify -e example/index.es6 > example/bundle.js",
+    "make-example": "./node_modules/.bin/browserify -t babelify -e example/index.es6 > example/bundle.js",
     "build": "./node_modules/.bin/babel ./*.es6 --out-dir ./",
     "start": "npm run browser-sync & npm run watch; wait",
     "prepublish": "npm run build",

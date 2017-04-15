@@ -155,14 +155,17 @@ let MakeList = ({keyboardEvents=true}={}) => {
 		onKeyDown(event) {
 			let key = event.keyCode
 
-			if (key == KEY.UP || key == KEY.K) {
-				this.focusItem({previous: true})
-			}
-			else if (key == KEY.DOWN || key == KEY.J) {
-				this.focusItem({next: true})
-			}
-			
-			this.toggleSelect({event, index: this.state.focusedIndex})
+			// if (key == KEY.UP) {
+			// 	// this.focusItem({previous: true})
+			// 	// this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
+			// else if (key == KEY.DOWN) {
+			// 	// this.focusItem({next: true})
+			// 	// this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
+			// else if (key == KEY.SPACE || key == KEY.ENTER) {
+			// 	this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
 
 			// prevent default behavior, in some situations pressing the key
 			// up / down would scroll the browser window
@@ -189,15 +192,17 @@ let MakeList = ({keyboardEvents=true}={}) => {
 				let selected = includes(this.state.selectedItems, index)
 				let focused = this.state.focusedIndex === index
 
-				return <ListItem key={index}
-					index={index}
-					disabled={disabled}
-					selected={selected}
-					focused={focused}
-					onMouseOver={(index) => this.focusItem({index})}
-					onChange={this.toggleSelect}>
+				return (
+					<ListItem key={index}
+						index={index}
+						disabled={disabled}
+						selected={selected}
+						focused={focused}
+						onMouseOver={(index) => this.focusItem({index})}
+						onChange={this.toggleSelect}>
 						{itemContent}
 					</ListItem>
+					)
 			})
 
 			return <ul className={cx('react-list-select', this.props.className)}

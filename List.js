@@ -1,65 +1,23 @@
-'use strict';
+// Thanks to https://gist.github.com/DelvarWorld/3784055
+// for the inspiration for the shift-selection
 
-Object.defineProperty(exports, "__esModule", {
-	value: true
-});
-exports.MakeList = undefined;
-
-var _react = require('react');
-
-var _react2 = _interopRequireDefault(_react);
-
-var _classnames = require('classnames');
-
-var _classnames2 = _interopRequireDefault(_classnames);
-
-var _map = require('lodash/collection/map');
-
-var _map2 = _interopRequireDefault(_map);
-
-var _includes = require('lodash/collection/includes');
-
-var _includes2 = _interopRequireDefault(_includes);
-
-var _isNumber = require('lodash/lang/isNumber');
-
-var _isNumber2 = _interopRequireDefault(_isNumber);
-
-var _min = require('lodash/collection/min');
-
-var _min2 = _interopRequireDefault(_min);
-
-var _max = require('lodash/collection/max');
-
-var _max2 = _interopRequireDefault(_max);
-
-var _range = require('lodash/utility/range');
-
-var _range2 = _interopRequireDefault(_range);
-
-var _remove = require('lodash/array/remove');
-
-var _remove2 = _interopRequireDefault(_remove);
-
-var _reject = require('lodash/collection/reject');
-
-var _reject2 = _interopRequireDefault(_reject);
-
-var _uniq = require('lodash/array/uniq');
-
-var _uniq2 = _interopRequireDefault(_uniq);
-
-var _keys = require('./keys');
-
-var _ListItem = require('./ListItem');
-
-var _ListItem2 = _interopRequireDefault(_ListItem);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+import React from 'react';
+import cx from 'classnames';
+import map from 'lodash/collection/map';
+import includes from 'lodash/collection/includes';
+import isNumber from 'lodash/lang/isNumber';
+import min from 'lodash/collection/min';
+import max from 'lodash/collection/max';
+import range from 'lodash/utility/range';
+import remove from 'lodash/array/remove';
+import reject from 'lodash/collection/reject';
+import uniq from 'lodash/array/uniq';
+import { KEYS, KEY } from './keys';
+import ListItem from './ListItem';
 
 let MakeList = ({ keyboardEvents = true } = {}) => {
 
-	let List = _react2.default.createClass({
+	let List = React.createClass({
 		displayName: 'List',
 
 		getDefaultProps() {
@@ -100,18 +58,17 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		},
 
 		select({ index = null, contiguous = false } = {}) {
-			if ((0, _includes2.default)(this.state.disabledItems, index)) return;
+			if (includes(this.state.disabledItems, index)) return;
 
-			let multiple = this.props.multiple;
-			let lastSelected = this.state.lastSelected;
-
+			let { multiple } = this.props;
+			let { lastSelected } = this.state;
 			let selectedItems = multiple ? this.state.selectedItems.concat(index) : [index];
 
-			if (contiguous && multiple && (0, _isNumber2.default)(lastSelected)) {
-				let start = (0, _min2.default)([lastSelected, index]);
-				let end = (0, _max2.default)([lastSelected, index]);
+			if (contiguous && multiple && isNumber(lastSelected)) {
+				let start = min([lastSelected, index]);
+				let end = max([lastSelected, index]);
 
-				selectedItems = (0, _uniq2.default)(selectedItems.concat((0, _range2.default)(start, end + 1)));
+				selectedItems = uniq(selectedItems.concat(range(start, end + 1)));
 			}
 
 			this.setState({ selectedItems, lastSelected: index });
@@ -120,20 +77,17 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		},
 
 		deselect({ index = null, contiguous = false } = {}) {
-			let multiple = this.props.multiple;
-			var _state = this.state;
-			let selectedItems = _state.selectedItems,
-			    lastSelected = _state.lastSelected;
+			let { multiple } = this.props;
+			let { selectedItems, lastSelected } = this.state;
 
+			if (contiguous && multiple && isNumber(lastSelected)) {
+				let start = min([lastSelected, index]);
+				let end = max([lastSelected, index]);
 
-			if (contiguous && multiple && (0, _isNumber2.default)(lastSelected)) {
-				let start = (0, _min2.default)([lastSelected, index]);
-				let end = (0, _max2.default)([lastSelected, index]);
-
-				let toDeselect = (0, _range2.default)(start, end + 1);
-				selectedItems = (0, _reject2.default)(selectedItems, idx => (0, _includes2.default)(toDeselect, idx));
+				let toDeselect = range(start, end + 1);
+				selectedItems = reject(selectedItems, idx => includes(toDeselect, idx));
 			} else {
-				selectedItems = (0, _reject2.default)(selectedItems, idx => idx === index);
+				selectedItems = reject(selectedItems, idx => idx === index);
 			}
 
 			this.setState({ selectedItems, lastSelected: index });
@@ -141,8 +95,7 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		},
 
 		enable(index) {
-			let disabledItems = this.state.disabledItems;
-
+			let { disabledItems } = this.state;
 			let indexOf = disabledItems.indexOf(index);
 
 			disabledItems.splice(indexOf, 1);
@@ -155,10 +108,7 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		},
 
 		focusItem({ next = false, previous = false, index = null } = {}) {
-			var _state2 = this.state;
-			let focusedIndex = _state2.focusedIndex,
-			    disabledItems = _state2.disabledItems;
-
+			let { focusedIndex, disabledItems } = this.state;
 			let lastItem = this.state.items.length - 1;
 
 			if (next) {
@@ -171,7 +121,7 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 
 				// skip disabled items
 				if (disabledItems.length) {
-					while ((0, _includes2.default)(disabledItems, focusedIndex)) {
+					while (includes(disabledItems, focusedIndex)) {
 						focusedIndex = focusedIndex >= lastItem ? 0 : focusedIndex + 1;
 					}
 				}
@@ -185,11 +135,11 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 
 				// skip disabled items
 				if (disabledItems.length) {
-					while ((0, _includes2.default)(disabledItems, focusedIndex)) {
+					while (includes(disabledItems, focusedIndex)) {
 						focusedIndex = focusedIndex <= 0 ? lastItem : focusedIndex - 1;
 					}
 				}
-			} else if (!(0, _includes2.default)(disabledItems, index) && (0, _isNumber2.default)(index)) {
+			} else if (!includes(disabledItems, index) && isNumber(index)) {
 				focusedIndex = index;
 			}
 
@@ -199,17 +149,21 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		onKeyDown(event) {
 			let key = event.keyCode;
 
-			if (key == _keys.KEY.UP || key == _keys.KEY.K) {
-				this.focusItem({ previous: true });
-			} else if (key == _keys.KEY.DOWN || key == _keys.KEY.J) {
-				this.focusItem({ next: true });
-			}
-
-			this.toggleSelect({ event, index: this.state.focusedIndex });
+			// if (key == KEY.UP) {
+			// 	// this.focusItem({previous: true})
+			// 	// this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
+			// else if (key == KEY.DOWN) {
+			// 	// this.focusItem({next: true})
+			// 	// this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
+			// else if (key == KEY.SPACE || key == KEY.ENTER) {
+			// 	this.toggleSelect({event, index: this.state.focusedIndex})
+			// }
 
 			// prevent default behavior, in some situations pressing the key
 			// up / down would scroll the browser window
-			if ((0, _includes2.default)(_keys.KEYS, key)) {
+			if (includes(KEYS, key)) {
 				event.preventDefault();
 			}
 		},
@@ -218,7 +172,7 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 			event.preventDefault();
 			let shift = event.shiftKey;
 
-			if (!(0, _includes2.default)(this.state.selectedItems, index)) {
+			if (!includes(this.state.selectedItems, index)) {
 				this.select({ index, contiguous: shift });
 			} else if (this.props.multiple) {
 				this.deselect({ index, contiguous: shift });
@@ -226,13 +180,13 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		},
 
 		render() {
-			let items = (0, _map2.default)(this.props.items, (itemContent, index) => {
-				let disabled = (0, _includes2.default)(this.state.disabledItems, index);
-				let selected = (0, _includes2.default)(this.state.selectedItems, index);
+			let items = map(this.props.items, (itemContent, index) => {
+				let disabled = includes(this.state.disabledItems, index);
+				let selected = includes(this.state.selectedItems, index);
 				let focused = this.state.focusedIndex === index;
 
-				return _react2.default.createElement(
-					_ListItem2.default,
+				return React.createElement(
+					ListItem,
 					{ key: index,
 						index: index,
 						disabled: disabled,
@@ -244,9 +198,9 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 				);
 			});
 
-			return _react2.default.createElement(
+			return React.createElement(
 				'ul',
-				{ className: (0, _classnames2.default)('react-list-select', this.props.className),
+				{ className: cx('react-list-select', this.props.className),
 					tabIndex: 0,
 					onKeyDown: keyboardEvents && this.onKeyDown },
 				items
@@ -254,23 +208,7 @@ let MakeList = ({ keyboardEvents = true } = {}) => {
 		}
 	});
 	return List;
-}; // Thanks to https://gist.github.com/DelvarWorld/3784055
-// for the inspiration for the shift-selection
+};
 
-const _default = MakeList();
-
-exports.default = _default;
-exports.MakeList = MakeList;
-;
-
-var _temp = function () {
-	if (typeof __REACT_HOT_LOADER__ === 'undefined') {
-		return;
-	}
-
-	__REACT_HOT_LOADER__.register(MakeList, 'MakeList', './List.es6');
-
-	__REACT_HOT_LOADER__.register(_default, 'default', './List.es6');
-}();
-
-;
+export default MakeList();
+export { MakeList };
